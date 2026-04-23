@@ -1,8 +1,15 @@
 import axios from 'axios';
 
-// Priority: VITE_API_URL (full API URL) → VITE_SERVER_URL+/api → Vite proxy /api
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || '';
-const baseURL = import.meta.env.VITE_API_URL || (SERVER_URL ? `${SERVER_URL}/api` : '/api');
+// baseURL resolution (in priority order):
+//   1. VITE_API_URL  — full API base, e.g. https://railway.app/api  ← must include /api
+//   2. VITE_SERVER_URL — server root, /api is appended automatically
+//   3. '/api'         — Vite dev proxy (pure local dev, no env vars set)
+const _serverUrl = (import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
+const baseURL    = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/$/, '')   // use as-is
+  : _serverUrl
+    ? `${_serverUrl}/api`                              // append /api to server root
+    : '/api';                                          // Vite proxy fallback
 
 const api = axios.create({
   baseURL,
