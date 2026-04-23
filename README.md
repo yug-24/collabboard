@@ -1,19 +1,19 @@
-# 🎨 CollabBoard – Real-time Collaborative Canvas
+#  CollabBoard – Real-time Collaborative Canvas
 
 A modern, feature-rich collaborative drawing application built with **Fabric.js**, **Yjs**, **Socket.io**, and **React**.
 
-## ✨ Features
+##  Features
 
-- 🖌️ **Real-time Drawing** – Multiple users drawing on the same canvas simultaneously
-- 👥 **Live Collaboration** – See cursor positions and presence of collaborators
-- 💾 **Auto-save** – Canvas state persists to MongoDB
-- ⚡ **Optimized Sync** – Message batching for efficient network usage
-- 🛡️ **Secure** – JWT authentication, HttpOnly cookies, CORS protection
-- 🚀 **Production-ready** – Deployed on Railway + Vercel
+- ️ **Real-time Drawing** – Multiple users drawing on the same canvas simultaneously
+-  **Live Collaboration** – See cursor positions and presence of collaborators
+-  **Auto-save** – Canvas state persists to MongoDB
+-  **Optimized Sync** – Message batching for efficient network usage
+- ️ **Secure** – JWT authentication, HttpOnly cookies, CORS protection
+-  **Production-ready** – Deployed on Railway + Vercel
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - **Node.js** 18+ and npm
@@ -63,7 +63,7 @@ cd client && npm run dev
 
 ---
 
-## 📋 Project Structure
+##  Project Structure
 
 ```
 collabboard/
@@ -95,7 +95,7 @@ collabboard/
 
 ---
 
-## 🔧 Configuration
+##  Configuration
 
 ### Environment Variables
 
@@ -118,7 +118,7 @@ See [`.env.example`](./.env.example) for complete reference.
 
 ---
 
-## 🛠️ Development
+## ️ Development
 
 ### Available Commands
 
@@ -146,7 +146,7 @@ npm run lint     # Run ESLint
 
 ---
 
-##  ⚠️ Common Issues & Troubleshooting
+##  ️ Common Issues & Troubleshooting
 
 ### Socket Connection Error 'NO_TOKEN'
 - Ensure you're logged in before accessing the board
@@ -173,7 +173,7 @@ npm run lint     # Run ESLint
 
 ---
 
-## 🚀 Production Deployment
+##  Production Deployment
 
 ### Deploy to Railway (Backend)
 
@@ -221,7 +221,7 @@ railway logs --follow
 
 ---
 
-## 📚 API Documentation
+##  API Documentation
 
 ### Authentication
 
@@ -263,24 +263,24 @@ railway logs --follow
 
 ---
 
-## 🔐 Security Considerations
+##  Security Considerations
 
-- ✅ JWT tokens with 15-minute expiration (refreshable for 7 days)
-- ✅ HttpOnly, Secure cookies prevent XSS attacks
-- ✅ CORS whitelist restricts cross-origin requests
-- ✅ Helmet.js adds security headers
-- ✅ Rate limiting on auth endpoints (10 attempts per 15min)
-- ✅ No sensitive data in localStorage (uses sessionStorage + HttpOnly cookies)
+-  JWT tokens with 15-minute expiration (refreshable for 7 days)
+-  HttpOnly, Secure cookies prevent XSS attacks
+-  CORS whitelist restricts cross-origin requests
+-  Helmet.js adds security headers
+-  Rate limiting on auth endpoints (10 attempts per 15min)
+-  No sensitive data in localStorage (uses sessionStorage + HttpOnly cookies)
 
 ---
 
-## 📝 License
+##  License
 
 MIT License – See LICENSE file for details.
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -289,7 +289,7 @@ MIT License – See LICENSE file for details.
 
 ---
 
-## 📞 Support
+##  Support
 
 
 - **Questions**: Open a GitHub issue
@@ -297,4 +297,4 @@ MIT License – See LICENSE file for details.
 
 ---
 
-**Happy Collaborating! 🎨✨**
+**Happy Collaborating! **

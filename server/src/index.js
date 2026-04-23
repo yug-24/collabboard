@@ -44,7 +44,7 @@ const corsOriginFn = (origin, callback) => {
   if (isAllowed) {
     callback(null, true);
   } else {
-    console.warn(`⚠️  CORS blocked: ${origin}`);
+    console.warn(`️  CORS blocked: ${origin}`);
     callback(new Error(`CORS: origin '${origin}' is not allowed`));
   }
 };
@@ -131,11 +131,11 @@ initSocket(io);
 
 // ── Process error handlers ────────────────────────────────────
 process.on('unhandledRejection', (err) => {
-  console.error('⚠️  Unhandled Rejection:', err);
+  console.error('️  Unhandled Rejection:', err);
 });
 
 process.on('uncaughtException', (err) => {
-  console.error('⚠️  Uncaught Exception:', err);
+  console.error('️  Uncaught Exception:', err);
   process.exit(1);
 });
 
@@ -166,13 +166,13 @@ const startServer = async () => {
     httpServer.listen(PORT, () => {
       console.log(`
 ╔════════════════════════════════════════╗
-║  🚀 CollabBoard Server Running         ║
+║   CollabBoard Server Running         ║
 ║                                        ║
 ║  Environment: ${NODE_ENV.padEnd(24)} ║
 ║  Port:        ${String(PORT).padEnd(24)} ║
 ╚════════════════════════════════════════╝
       `);
-      console.log('📋 Endpoints:');
+      console.log(' Endpoints:');
       console.log(`   • Health:   /health`);
       console.log(`   • Auth:     POST /api/auth/login`);
       console.log(`   • Auth:     POST /api/auth/register`);
@@ -180,7 +180,7 @@ const startServer = async () => {
       console.log(`   • Boards:   /api/boards\n`);
     });
   } catch (err) {
-    console.error('❌ Failed to start server:', err.message);
+    console.error(' Failed to start server:', err.message);
     process.exit(1);
   }
 };

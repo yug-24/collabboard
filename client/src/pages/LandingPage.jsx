@@ -248,7 +248,7 @@ const LandingPage = () => {
               &copy; {new Date().getFullYear()} CollabBoard. All rights reserved.
             </p>
             <p className="text-sm text-surface-400">
-              Designed with 💙 for remote teams.
+              Designed with  for remote teams.
             </p>
           </div>
         </div>

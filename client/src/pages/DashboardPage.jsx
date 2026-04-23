@@ -85,7 +85,7 @@ const BoardCard = ({ board, onDelete, view }) => {
             <rect width="100%" height="100%" fill={`url(#p-${board._id})`} />
           </svg>
         </div>
-        <span className="text-4xl opacity-60">🎨</span>
+        <span className="text-4xl opacity-60"></span>
 
         {/* Hover actions */}
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -297,7 +297,7 @@ const DashboardPage = () => {
         <div className="flex items-start justify-between mb-8 gap-4">
           <div>
             <h1 className="text-2xl font-bold text-surface-900">
-              {greeting()}, {user?.name?.split(' ')[0]} 👋
+              {greeting()}, {user?.name?.split(' ')[0]} 
             </h1>
             <p className="text-surface-500 text-sm mt-1">
               {boards.length === 0 ? 'Create your first board to get started' : `${boards.length} board${boards.length !== 1 ? 's' : ''} in your workspace`}
@@ -362,13 +362,13 @@ const DashboardPage = () => {
           <div className="flex flex-col items-center justify-center py-24 text-center">
             {search ? (
               <>
-                <div className="w-16 h-16 bg-surface-100 rounded-2xl flex items-center justify-center mb-4 text-2xl">🔍</div>
+                <div className="w-16 h-16 bg-surface-100 rounded-2xl flex items-center justify-center mb-4 text-2xl"></div>
                 <p className="text-surface-600 font-medium">No boards match "{search}"</p>
                 <p className="text-surface-400 text-sm mt-1">Try a different search term</p>
               </>
             ) : (
               <>
-                <div className="w-20 h-20 bg-brand-50 rounded-3xl flex items-center justify-center mb-6 text-4xl">🎨</div>
+                <div className="w-20 h-20 bg-brand-50 rounded-3xl flex items-center justify-center mb-6 text-4xl"></div>
                 <h2 className="text-lg font-semibold text-surface-900 mb-2">Your canvas awaits</h2>
                 <p className="text-surface-500 text-sm mb-6 max-w-xs">
                   Create your first board or join an existing one with a room code.

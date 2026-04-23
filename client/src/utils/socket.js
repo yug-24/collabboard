@@ -35,11 +35,11 @@ export const connectSocket = () => {
     window.__collabSocket = socket;
 
     if (import.meta.env.DEV) {
-      socket.on('connect', () => console.log('🔌 Socket connected:', socket.id));
-      socket.on('disconnect', (r) => console.log('🔌 Socket disconnected:', r));
+      socket.on('connect', () => console.log(' Socket connected:', socket.id));
+      socket.on('disconnect', (r) => console.log(' Socket disconnected:', r));
       socket.on('connect_error', (e) => {
         const msg = e.data?.content || e.message;
-        console.warn('🔌 Socket error:', msg);
+        console.warn(' Socket error:', msg);
       });
     }
   }
@@ -48,7 +48,7 @@ export const connectSocket = () => {
   if (!socket.connected && getAccessToken()) {
     socket.connect();
   } else if (!getAccessToken()) {
-    if (import.meta.env.DEV) console.warn('🔌 Socket connect deferred: no token');
+    if (import.meta.env.DEV) console.warn(' Socket connect deferred: no token');
   }
 
   return socket;

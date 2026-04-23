@@ -174,7 +174,7 @@ router.post('/refresh', refreshLimiter, async (req, res, next) => {
       data: { accessToken },
     });
   } catch (error) {
-    console.error('🔴 [refresh] error:', error.message);
+    console.error(' [refresh] error:', error.message);
     next(error);
   }
 });

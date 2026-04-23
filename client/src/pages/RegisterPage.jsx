@@ -57,7 +57,7 @@ const RegisterPage = () => {
     setIsLoading(false);
 
     if (result.success) {
-      toast.success('Account created! Welcome to CollabBoard 🎉');
+      toast.success('Account created! Welcome to CollabBoard ');
       navigate('/dashboard', { replace: true });
     } else {
       toast.error(result.message);
@@ -89,9 +89,9 @@ const RegisterPage = () => {
 
         <div className="relative z-10 space-y-6">
           {[
-            { icon: '🎨', title: 'Real-time canvas', desc: 'Draw, diagram, and design together in real time.' },
-            { icon: '👥', title: 'Live cursors', desc: "See your team's cursors and presence instantly." },
-            { icon: '💾', title: 'Auto-save', desc: 'Every stroke is saved. Never lose your work.' },
+            { icon: '', title: 'Real-time canvas', desc: 'Draw, diagram, and design together in real time.' },
+            { icon: '', title: 'Live cursors', desc: "See your team's cursors and presence instantly." },
+            { icon: '', title: 'Auto-save', desc: 'Every stroke is saved. Never lose your work.' },
           ].map((f) => (
             <div key={f.title} className="flex items-start gap-4">
               <div className="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center text-lg shrink-0">

@@ -44,7 +44,7 @@ export const errorHandler = (err, req, res, next) => {
 
   // Log error with full details
   if (process.env.NODE_ENV === 'development') {
-    console.error(`\n❌ [${req.method}] ${req.path}`);
+    console.error(`\n [${req.method}] ${req.path}`);
     console.error(`   Status: ${statusCode}`);
     console.error(`   Message: ${message}`);
     console.error(`   Name: ${err.name}`);

@@ -349,13 +349,13 @@ const Toolbar = ({
             onClick={exportPNG}
             className="text-left px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 rounded-xl transition-colors"
           >
-            📷 PNG image
+             PNG image
           </button>
           <button
             onClick={exportSVG}
             className="text-left px-3 py-2 text-sm text-surface-700 hover:bg-surface-50 rounded-xl transition-colors"
           >
-            🎨 SVG vector
+             SVG vector
           </button>
         </div>
       </Popover>

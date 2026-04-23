@@ -550,7 +550,7 @@ const useCanvas = ({ canvasId, onCanvasChange, isReady = true }) => {
     const colors = ['#fef08a', '#86efac', '#93c5fd', '#f9a8d4', '#fdba74'];
     const bg     = colors[Math.floor(Math.random() * colors.length)];
 
-    const text = new fabric.Textbox('📝 Note...\n', {
+    const text = new fabric.Textbox(' Note...\n', {
       left: pos.x, top: pos.y,
       width: 160,
       fontSize: 14,

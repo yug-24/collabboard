@@ -60,7 +60,7 @@ export const initSocket = (io) => {
 
   io.on('connection', (socket) => {
     const userName = socket.user?.name || 'Unknown';
-    console.log(`🔌 [Socket] ${userName} connected (${socket.id})`);
+    console.log(` [Socket] ${userName} connected (${socket.id})`);
 
     // ── JOIN ROOM ───────────────────────────────────────────
     socket.on('room:join', async ({ roomId }) => {
@@ -121,7 +121,7 @@ export const initSocket = (io) => {
           cursorColor: socket.user.cursorColor,
         });
 
-        console.log(`📋 [Room:${roomId}] ${socket.user.name} joined (${room.size} users)`);
+        console.log(` [Room:${roomId}] ${socket.user.name} joined (${room.size} users)`);
 
         // Track collaborator non-blocking
         const isOwner = board.owner.toString() === socket.user._id.toString();
@@ -221,7 +221,7 @@ export const initSocket = (io) => {
     socket.on('room:leave',  () => handleLeave(socket, io));
     socket.on('disconnect',  (reason) => {
       handleLeave(socket, io);
-      console.log(`🔌 [Socket] ${userName} disconnected (reason: ${reason})`);
+      console.log(` [Socket] ${userName} disconnected (reason: ${reason})`);
     });
   });
 };
@@ -242,7 +242,7 @@ const handleLeave = async (socket, io) => {
           const state = room.serializeState();
           if (state) {
             await Board.findByIdAndUpdate(roomId, { yjsState: state });
-            console.log(`💾 [Room:${roomId}] State persisted (no active users)`);
+            console.log(` [Room:${roomId}] State persisted (no active users)`);
           }
         } catch (err) {
           console.error('[room:gc]', err.message);
