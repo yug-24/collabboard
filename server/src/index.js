@@ -18,13 +18,28 @@ import { errorHandler, notFound } from './middleware/error.middleware.js';
 const app = express();
 app.set('trust proxy', 1);
 
+// ── Allowed origins (supports multiple via CLIENT_URL comma-separated list) ──
+const rawOrigins = process.env.CLIENT_URL || 'http://localhost:5173';
+const allowedOrigins = rawOrigins.split(',').map((o) => o.trim()).filter(Boolean);
+// Always allow local dev even in production mode
+if (!allowedOrigins.includes('http://localhost:5173')) {
+  allowedOrigins.push('http://localhost:5173');
+}
+
+const corsOriginFn = (origin, callback) => {
+  // Allow requests with no origin (server-to-server, curl, Postman)
+  if (!origin) return callback(null, true);
+  if (allowedOrigins.includes(origin)) return callback(null, true);
+  callback(new Error(`CORS: origin '${origin}' is not allowed`));
+};
+
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
 
 // ── Socket.io setup with enhanced CORS for production ────────
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: corsOriginFn,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -45,7 +60,7 @@ app.use(
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: corsOriginFn,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -144,7 +159,7 @@ const startServer = async () => {
 ║                                        ║
 ║  Environment: ${(process.env.NODE_ENV || 'development').padEnd(24)} ║
 ║  Port:        ${String(PORT).padEnd(24)} ║
-║  Client URL:  ${(process.env.CLIENT_URL || 'http://localhost:5173').slice(0, 24).padEnd(24)} ║
+║  Allowed:     ${allowedOrigins[0].slice(0, 24).padEnd(24)} ║
 ╚════════════════════════════════════════╝
       `);
       if (process.env.NODE_ENV !== 'production') {

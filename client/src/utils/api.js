@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.DEV 
-  ? '/api' 
-  : (import.meta.env.VITE_SERVER_URL ? `${import.meta.env.VITE_SERVER_URL}/api` : '/api');
+// Use VITE_SERVER_URL when set (works in both dev and prod builds).
+// Falls back to Vite's /api proxy when no explicit URL is configured (pure local dev).
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || '';
+const baseURL = SERVER_URL ? `${SERVER_URL}/api` : '/api';
 
 const api = axios.create({
   baseURL,

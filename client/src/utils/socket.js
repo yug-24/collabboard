@@ -7,12 +7,9 @@ export const getSocket = () => socket;
 
 export const connectSocket = () => {
   if (!socket) {
-    // Determine socket URL based on environment
-    // In dev: use Vite proxy (/)
-    // In prod: use CLIENT_URL environment variable or current origin
-    const socketUrl = import.meta.env.DEV
-      ? '/'
-      : (import.meta.env.VITE_SERVER_URL || window.location.origin);
+    // Use VITE_SERVER_URL when set (covers Railway testing in dev + Vercel in prod).
+    // Falls back to Vite proxy root '/' when running pure local dev with no URL set.
+    const socketUrl = import.meta.env.VITE_SERVER_URL || '/';
 
     socket = io(socketUrl, {
       autoConnect: false,
