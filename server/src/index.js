@@ -18,31 +18,44 @@ import { errorHandler, notFound } from './middleware/error.middleware.js';
 const app = express();
 app.set('trust proxy', 1);
 
-// ── Allowed origins (supports multiple via CLIENT_URL comma-separated list) ──
-const rawOrigins = process.env.CLIENT_URL || 'http://localhost:5173';
-const allowedOrigins = rawOrigins.split(',').map((o) => o.trim()).filter(Boolean);
-// Always allow local dev even in production mode
-if (!allowedOrigins.includes('http://localhost:5173')) {
-  allowedOrigins.push('http://localhost:5173');
-}
+// ── Allowed origins ──────────────────────────────────────────
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://collabboard-sigma.vercel.app',        // production Vercel URL
+  /^https:\/\/collabboard-.*\.vercel\.app$/,     // all preview deployments
+];
 
 const corsOriginFn = (origin, callback) => {
-  // Allow requests with no origin (server-to-server, curl, Postman)
+  // Allow server-to-server requests (curl, Postman, Railway health checks)
   if (!origin) return callback(null, true);
-  if (allowedOrigins.includes(origin)) return callback(null, true);
-  callback(new Error(`CORS: origin '${origin}' is not allowed`));
+
+  const isAllowed = allowedOrigins.some((o) =>
+    typeof o === 'string' ? o === origin : o.test(origin)
+  );
+
+  if (isAllowed) {
+    callback(null, true);
+  } else {
+    callback(new Error(`CORS: origin '${origin}' is not allowed`));
+  }
 };
 
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
 
-// ── Socket.io setup with enhanced CORS for production ────────
+// ── Socket.IO setup ───────────────────────────────────────────
 const io = new Server(httpServer, {
   cors: {
-    origin: corsOriginFn,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const isAllowed = allowedOrigins.some((o) =>
+        typeof o === 'string' ? o === origin : o.test(origin)
+      );
+      isAllowed ? callback(null, true) : callback(new Error('CORS: origin not allowed'));
+    },
+    methods: ['GET', 'POST'],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
   },
   connectionStateRecovery: {
     maxDisconnectionDuration: 2 * 60 * 1000,
@@ -66,6 +79,7 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
+app.options('*', cors({ origin: corsOriginFn, credentials: true }));
 
 app.use(
   rateLimit({
