@@ -43,7 +43,7 @@
   ],
   "env": {
     "VITE_SERVER_URL": "https://collabboard-production-9414.up.railway.app",
-    "VITE_API_URL": "https://collabboard-production-9414.up.railway.app/api",
+    "VITE_API_URL": "https://collabboard-production-9414.up.railway.app",
     "VITE_SOCKET_URL": "https://collabboard-production-9414.up.railway.app"
   }
 }

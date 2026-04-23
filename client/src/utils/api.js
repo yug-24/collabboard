@@ -1,18 +1,13 @@
 import axios from 'axios';
 
-// baseURL resolution (in priority order):
-//   1. VITE_API_URL  — full API base, e.g. https://railway.app/api  ← must include /api
-//   2. VITE_SERVER_URL — server root, /api is appended automatically
-//   3. '/api'         — Vite dev proxy (pure local dev, no env vars set)
-const _serverUrl = (import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
-const baseURL    = import.meta.env.VITE_API_URL
-  ? import.meta.env.VITE_API_URL.replace(/\/$/, '')   // use as-is
-  : _serverUrl
-    ? `${_serverUrl}/api`                              // append /api to server root
-    : '/api';                                          // Vite proxy fallback
+// ── Base URL ────────────────────────────────────────────────────
+// VITE_API_URL = bare server root, e.g. https://railway.app (NO trailing /api)
+// All API calls below explicitly include /api/ in the path.
+// In pure local dev (no env var set), baseURL is '' so Vite proxy handles /api/*
+const BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 const api = axios.create({
-  baseURL,
+  baseURL: BASE_URL,
   withCredentials: true, // Send cookies (refresh token)
   headers: { 'Content-Type': 'application/json' },
 });
@@ -48,7 +43,7 @@ api.interceptors.response.use(
     }
 
     // Don't refresh on auth routes themselves (prevents infinite loops)
-    if (original.url?.includes('/auth/')) {
+    if (original.url?.includes('/api/auth/')) {
       return Promise.reject(error);
     }
 
@@ -69,7 +64,7 @@ api.interceptors.response.use(
 
       try {
         const { data } = await axios.post(
-          `${baseURL}/auth/refresh`,
+          `${BASE_URL}/api/auth/refresh`,
           {},
           { withCredentials: true }
         );
@@ -111,21 +106,22 @@ export const clearAccessToken = () => {
 };
 
 // ── Named API functions ───────────────────────────────────────
+// All paths explicitly include /api/ prefix
 export const authApi = {
-  register: (data) => api.post('/auth/register', data),
-  login:    (data) => api.post('/auth/login', data),
-  logout:   ()     => api.post('/auth/logout'),
-  refresh:  ()     => api.post('/auth/refresh'),
-  me:       ()     => api.get('/auth/me'),
+  register: (data) => api.post('/api/auth/register', data),
+  login:    (data) => api.post('/api/auth/login', data),
+  logout:   ()     => api.post('/api/auth/logout'),
+  refresh:  ()     => api.post('/api/auth/refresh'),
+  me:       ()     => api.get('/api/auth/me'),
 };
 
 export const boardApi = {
-  list:       ()           => api.get('/boards'),
-  create:     (data)       => api.post('/boards', data),
-  get:        (id)         => api.get(`/boards/${id}`),
-  update:     (id, data)   => api.patch(`/boards/${id}`, data),
-  delete:     (id)         => api.delete(`/boards/${id}`),
-  joinByCode: (roomCode)   => api.get(`/boards/join/${roomCode}`),
+  list:       ()           => api.get('/api/boards'),
+  create:     (data)       => api.post('/api/boards', data),
+  get:        (id)         => api.get(`/api/boards/${id}`),
+  update:     (id, data)   => api.patch(`/api/boards/${id}`, data),
+  delete:     (id)         => api.delete(`/api/boards/${id}`),
+  joinByCode: (roomCode)   => api.get(`/api/boards/join/${roomCode}`),
 };
 
 export default api;
