@@ -1,9 +1,8 @@
 import axios from 'axios';
 
-// Use VITE_SERVER_URL when set (works in both dev and prod builds).
-// Falls back to Vite's /api proxy when no explicit URL is configured (pure local dev).
+// Priority: VITE_API_URL (full API URL) → VITE_SERVER_URL+/api → Vite proxy /api
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || '';
-const baseURL = SERVER_URL ? `${SERVER_URL}/api` : '/api';
+const baseURL = import.meta.env.VITE_API_URL || (SERVER_URL ? `${SERVER_URL}/api` : '/api');
 
 const api = axios.create({
   baseURL,
