@@ -18,16 +18,23 @@ import { errorHandler, notFound } from './middleware/error.middleware.js';
 const app = express();
 app.set('trust proxy', 1);
 
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
 // ── Allowed origins ──────────────────────────────────────────
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://collabboard-sigma.vercel.app',        // production Vercel URL
-  /^https:\/\/collabboard-.*\.vercel\.app$/,     // all preview deployments
+  'https://collabboard-sigma.vercel.app',       // production Vercel URL
+  /^https:\/\/collabboard-.*\.vercel\.app$/,    // all Vercel preview deployments
 ];
 
+// Add CLIENT_URL from env if provided (extra safety)
+if (process.env.CLIENT_URL && !allowedOrigins.includes(process.env.CLIENT_URL)) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
+
 const corsOriginFn = (origin, callback) => {
-  // Allow server-to-server requests (curl, Postman, Railway health checks)
+  // Allow server-to-server / Postman / Railway health checks (no origin)
   if (!origin) return callback(null, true);
 
   const isAllowed = allowedOrigins.some((o) =>
@@ -37,6 +44,7 @@ const corsOriginFn = (origin, callback) => {
   if (isAllowed) {
     callback(null, true);
   } else {
+    console.warn(`⚠️  CORS blocked: ${origin}`);
     callback(new Error(`CORS: origin '${origin}' is not allowed`));
   }
 };
@@ -44,16 +52,10 @@ const corsOriginFn = (origin, callback) => {
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
 
-// ── Socket.IO setup ───────────────────────────────────────────
+// ── Socket.IO ─────────────────────────────────────────────────
 const io = new Server(httpServer, {
   cors: {
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      const isAllowed = allowedOrigins.some((o) =>
-        typeof o === 'string' ? o === origin : o.test(origin)
-      );
-      isAllowed ? callback(null, true) : callback(new Error('CORS: origin not allowed'));
-    },
+    origin: corsOriginFn,
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -79,6 +81,8 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
+
+// Handle preflight for all routes
 app.options('*', cors({ origin: corsOriginFn, credentials: true }));
 
 app.use(
@@ -95,36 +99,37 @@ app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+// Morgan in all environments so Railway logs show requests
+app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-// ── Favicon (prevent 404 errors) ─────────────────────────────
-app.get('/favicon.ico', (req, res) => {
-  res.status(204).end();
-});
+// ── Favicon ───────────────────────────────────────────────────
+app.get('/favicon.ico', (_req, res) => res.status(204).end());
 
 // ── Health check ──────────────────────────────────────────────
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV,
+    environment: NODE_ENV,
     mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
   });
 });
 
 // ── API Routes ────────────────────────────────────────────────
+// All routes are prefixed with /api
+// Frontend must call: https://your-railway-url.app/api/auth/login
 app.use('/api/auth', authRoutes);
 app.use('/api/boards', boardRoutes);
 
-// ── Error handling and Socket.io ──────────────────────────────
+// ── 404 + Error handlers ──────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
+
+// ── Socket.IO handlers ────────────────────────────────────────
 initSocket(io);
 
-// ── Error handling for unhandled rejections ────────────────────
+// ── Process error handlers ────────────────────────────────────
 process.on('unhandledRejection', (err) => {
   console.error('⚠️  Unhandled Rejection:', err);
 });
@@ -145,42 +150,34 @@ process.on('SIGTERM', () => {
 // ── Start server ──────────────────────────────────────────────
 const startServer = async () => {
   try {
-    // Validate required environment variables
-    const requiredEnvs = [
-      'JWT_ACCESS_SECRET',
-      'JWT_REFRESH_SECRET',
-      'MONGODB_URI',
-    ];
-
-    if (process.env.NODE_ENV === 'production') {
-      requiredEnvs.push('CLIENT_URL');
-    }
+    // Required env vars always
+    const requiredEnvs = ['JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET', 'MONGODB_URI'];
 
     const missing = requiredEnvs.filter((env) => !process.env[env]);
     if (missing.length > 0) {
       throw new Error(
         `Missing required environment variables: ${missing.join(', ')}\n` +
-        `Please set them in .env file or as environment variables.`
+        `Please set them in .env or as Railway environment variables.`
       );
     }
 
     await connectDB();
-    
+
     httpServer.listen(PORT, () => {
       console.log(`
 ╔════════════════════════════════════════╗
 ║  🚀 CollabBoard Server Running         ║
 ║                                        ║
-║  Environment: ${(process.env.NODE_ENV || 'development').padEnd(24)} ║
+║  Environment: ${NODE_ENV.padEnd(24)} ║
 ║  Port:        ${String(PORT).padEnd(24)} ║
-║  Allowed:     ${allowedOrigins[0].slice(0, 24).padEnd(24)} ║
 ╚════════════════════════════════════════╝
       `);
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('📋 Quick Test:');
-        console.log(`   • Health: http://localhost:${PORT}/health`);
-        console.log(`   • Auth: POST http://localhost:${PORT}/api/auth/login\n`);
-      }
+      console.log('📋 Endpoints:');
+      console.log(`   • Health:   /health`);
+      console.log(`   • Auth:     POST /api/auth/login`);
+      console.log(`   • Auth:     POST /api/auth/register`);
+      console.log(`   • Auth:     POST /api/auth/refresh`);
+      console.log(`   • Boards:   /api/boards\n`);
     });
   } catch (err) {
     console.error('❌ Failed to start server:', err.message);
